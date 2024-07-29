@@ -1,0 +1,30 @@
+{
+  "name": "brimmar/phpstan-rustlike-option-extension",
+  "version": "1.0.0",
+  "description": "A PHPStan extension to help with the Option Type implementation for PHP",
+  "type": "phpstan-extension",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Brimmar\\PHPStan\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Bryan",
+      "email": "bryan.sergio@brimmar.dev"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extras": {
+    "phpstan": {
+      "includes": [
+        "extension.neon"
+      ]
+    }
+  },
+  "require": {
+    "phpstan/phpstan": "^1.11"
+  }
+}

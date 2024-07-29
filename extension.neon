@@ -1,0 +1,13 @@
+services:
+    -
+        class: Brimmar\PHPStan\Rules\OptionUnsafeMethodCallRule
+        arguments:
+            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Brimmar\PHPStan\Rules\OptionMatchNamedArgumentsRule
+        arguments:
+            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+        tags:
+            - phpstan.rules.rule
