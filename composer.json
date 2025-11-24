@@ -25,6 +25,6 @@
     }
   },
   "require": {
-    "phpstan/phpstan": "^1.11"
+    "phpstan/phpstan": "^2.0"
   }
 }

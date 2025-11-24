@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -15,12 +16,7 @@ use PHPStan\Type\ObjectType;
  */
 class OptionMatchNamedArgumentsRule implements Rule
 {
-    private string $optionInterface;
-
-    public function __construct(string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option')
-    {
-        $this->optionInterface = $optionInterface;
-    }
+    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
 
     public function getNodeType(): string
     {
@@ -29,10 +25,6 @@ class OptionMatchNamedArgumentsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node instanceof MethodCall) {
-            return [];
-        }
-
         if (! $node->name instanceof Node\Identifier) {
             return [];
         }
@@ -42,27 +34,37 @@ class OptionMatchNamedArgumentsRule implements Rule
         }
 
         $type = $scope->getType($node->var);
-        if (! $type instanceof ObjectType) {
-            return [];
-        }
 
-        if (! $type->isInstanceOf($this->optionInterface)->yes()) {
+        $optionType = new ObjectType($this->optionInterface);
+        if (! $optionType->isSuperTypeOf($type)->yes()) {
             return [];
         }
 
         if (count($node->getArgs()) !== 2) {
-            return ['Option::match() must have exactly two arguments.'];
+            return [
+                RuleErrorBuilder::message('Option::match() must have exactly two arguments.')
+                    ->identifier('option.matchArgs')
+                    ->build(),
+            ];
         }
 
         $okArg = $node->getArgs()[0];
         $errArg = $node->getArgs()[1];
 
         if ($okArg->name === null || $errArg->name === null) {
-            return ['Option::match() must use named arguments "Some" and "None".'];
+            return [
+                RuleErrorBuilder::message('Option::match() must use named arguments "Some" and "None".')
+                    ->identifier('option.matchNamedArgs')
+                    ->build(),
+            ];
         }
 
         if ($okArg->name->name !== 'Ok' || $errArg->name->name !== 'Err') {
-            return ['Option::match() must use named arguments "Some" and "None" in this order.'];
+            return [
+                RuleErrorBuilder::message('Option::match() must use named arguments "Some" and "None" in this order.')
+                    ->identifier('option.matchOrder')
+                    ->build(),
+            ];
         }
 
         return [];

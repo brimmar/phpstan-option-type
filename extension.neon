@@ -6,6 +6,10 @@ services:
         tags:
             - phpstan.rules.rule
     -
+        class: Brimmar\PHPStan\Visitors\ParentConnectingVisitor
+        tags:
+            - phpstan.parser.richParserNodeVisitor
+    -
         class: Brimmar\PHPStan\Rules\OptionMatchNamedArgumentsRule
         arguments:
             optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
