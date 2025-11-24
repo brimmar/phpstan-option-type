@@ -12,8 +12,12 @@ use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 
+/**
+ * @implements Rule<MethodCall>
+ */
 class OptionUnsafeMethodCallRule implements Rule
 {
     public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
@@ -25,7 +29,6 @@ class OptionUnsafeMethodCallRule implements Rule
 
     /**
      * @param  MethodCall  $node
-     * @return string[]
      */
     public function processNode(Node $node, Scope $scope): array
     {
@@ -36,16 +39,19 @@ class OptionUnsafeMethodCallRule implements Rule
         $methodName = $node->name->name;
         $type = $scope->getType($node->var);
 
-        if (! $type instanceof ObjectType || ! $type->isInstanceOf($this->optionInterface)->yes()) {
+        $optionType = new ObjectType($this->optionInterface);
+        if (! $optionType->isSuperTypeOf($type)->yes()) {
             return [];
         }
 
         $dangerousMethods = ['unwrap', 'expect'];
         if (in_array($methodName, $dangerousMethods, true)) {
-            $checkResult = $this->analyzeContext($node, $scope);
+            $checkResult = $this->analyzeContext($node, $methodName);
             if (! $checkResult['isSafe']) {
                 return [
-                    "Potentially unsafe use of {$methodName}() on Option type without proper checks. Consider using isSome() checks, match(), or unwrapOr() for safer handling.",
+                    RuleErrorBuilder::message("Potentially unsafe use of {$methodName}() on Option type without proper checks. Consider using isSome() checks, match(), or unwrapOr() for safer handling.")
+                        ->identifier('option.unsafeMethod')
+                        ->build(),
                 ];
             }
         }
@@ -53,10 +59,13 @@ class OptionUnsafeMethodCallRule implements Rule
         return [];
     }
 
-    private function analyzeContext(MethodCall $node, Scope $scope): array
+    /**
+     * @return array{isSafe: bool}
+     */
+    private function analyzeContext(MethodCall $node, string $methodName): array
     {
+        // @phpstan-ignore-next-line
         $parent = $node->getAttribute('parent');
-        $methodName = $node->name->name;
 
         while ($parent !== null) {
             if ($parent instanceof If_) {
@@ -66,12 +75,13 @@ class OptionUnsafeMethodCallRule implements Rule
                     $hasEarlyReturn = $this->hasEarlyReturn($parent->stmts);
 
                     if ($inIfBlock) {
-                        return ['isSafe' => ($condition === 'isSome' && in_array($methodName, ['unwrap', 'expect']))];
+                        return ['isSafe' => ($condition === 'isSome' && in_array($methodName, ['unwrap', 'expect'], true))];
                     } elseif ($hasEarlyReturn) {
-                        return ['isSafe' => ($condition === 'isNone' && in_array($methodName, ['unwrap', 'expect']))];
+                        return ['isSafe' => ($condition === 'isNone' && in_array($methodName, ['unwrap', 'expect'], true))];
                     }
                 }
             }
+            // @phpstan-ignore-next-line
             $parent = $parent->getAttribute('parent');
         }
 
@@ -86,11 +96,14 @@ class OptionUnsafeMethodCallRule implements Rule
                 return $methodName;
             }
         } elseif ($condition instanceof BooleanNot && $condition->expr instanceof MethodCall) {
-            $methodName = $condition->expr->name->name;
-            if ($methodName === 'isSome') {
-                return 'isNone';
-            } elseif ($methodName === 'isNone') {
-                return 'isSome';
+            $expr = $condition->expr;
+            if ($expr->name instanceof Identifier) {
+                $methodName = $expr->name->name;
+                if ($methodName === 'isSome') {
+                    return 'isNone';
+                } elseif ($methodName === 'isNone') {
+                    return 'isSome';
+                }
             }
         }
 
@@ -108,6 +121,9 @@ class OptionUnsafeMethodCallRule implements Rule
         return false;
     }
 
+    /**
+     * @param Node[] $statements
+     */
     private function hasEarlyReturn(array $statements): bool
     {
         foreach ($statements as $stmt) {
