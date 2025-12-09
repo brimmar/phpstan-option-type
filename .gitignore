@@ -1,1 +1,8 @@
 vendor
+
+# beads (bd) - Git-synced issue tracker
+.beads/beads.db
+.beads/beads.db-*
+.beads/bd.sock
+.beads/.exclusive-lock
+.git/beads-worktrees/
