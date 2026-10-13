@@ -48,21 +48,24 @@ class OptionMatchNamedArgumentsRule implements Rule
             ];
         }
 
-        $okArg = $node->getArgs()[0];
-        $errArg = $node->getArgs()[1];
+        $names = [];
+        foreach ($node->getArgs() as $arg) {
+            if ($arg->name === null) {
+                return [
+                    RuleErrorBuilder::message('Option::match() must use named arguments "Some" and "None".')
+                        ->identifier('option.matchNamedArgs')
+                        ->build(),
+                ];
+            }
 
-        if ($okArg->name === null || $errArg->name === null) {
+            $names[] = $arg->name->name;
+        }
+
+        sort($names);
+        if ($names !== ['None', 'Some']) {
             return [
                 RuleErrorBuilder::message('Option::match() must use named arguments "Some" and "None".')
                     ->identifier('option.matchNamedArgs')
-                    ->build(),
-            ];
-        }
-
-        if ($okArg->name->name !== 'Ok' || $errArg->name->name !== 'Err') {
-            return [
-                RuleErrorBuilder::message('Option::match() must use named arguments "Some" and "None" in this order.')
-                    ->identifier('option.matchOrder')
                     ->build(),
             ];
         }
