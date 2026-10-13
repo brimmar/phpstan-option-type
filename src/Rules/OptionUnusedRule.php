@@ -91,8 +91,9 @@ class OptionUnusedRule implements Rule
         }
 
         if ($expr instanceof StaticCall && $expr->name instanceof Identifier && $expr->class instanceof Name) {
-            $class = $this->reflectionProvider->hasClass($expr->class->toString())
-                ? $this->reflectionProvider->getClass($expr->class->toString())
+            $className = $scope->resolveName($expr->class);
+            $class = $this->reflectionProvider->hasClass($className)
+                ? $this->reflectionProvider->getClass($className)
                 : null;
             if ($class === null || ! $class->hasMethod($expr->name->toString())) {
                 return false;
