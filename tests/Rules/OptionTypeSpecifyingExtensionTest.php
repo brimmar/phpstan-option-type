@@ -10,7 +10,7 @@ class OptionTypeSpecifyingExtensionTest extends TypeInferenceTestCase
 {
     public static function dataFileAsserts(): iterable
     {
-        yield from self::gatherAssertTypes(__DIR__ . '/data/option-narrowing.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/Data/option-narrowing.php');
     }
 
     /**

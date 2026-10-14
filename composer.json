@@ -1,6 +1,5 @@
 {
   "name": "brimmar/phpstan-rustlike-option-extension",
-  "version": "1.0.0",
   "description": "A PHPStan extension to help with the Option Type implementation for PHP",
   "type": "phpstan-extension",
   "license": "MIT",
