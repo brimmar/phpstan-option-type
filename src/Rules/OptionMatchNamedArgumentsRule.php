@@ -16,6 +16,9 @@ use PHPStan\Type\ObjectType;
  */
 class OptionMatchNamedArgumentsRule implements Rule
 {
+    /**
+     * @param class-string $optionInterface
+     */
     public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
 
     public function getNodeType(): string

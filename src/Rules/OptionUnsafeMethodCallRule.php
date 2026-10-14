@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brimmar\PHPStan\Rules;
 
+use Brimmar\PhpOption\None;
 use Brimmar\PhpOption\Some;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
@@ -18,6 +19,9 @@ use PHPStan\Type\ObjectType;
  */
 class OptionUnsafeMethodCallRule implements Rule
 {
+    /**
+     * @param class-string $optionInterface
+     */
     public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
 
     public function getNodeType(): string
@@ -43,6 +47,14 @@ class OptionUnsafeMethodCallRule implements Rule
 
         if ((new ObjectType(Some::class))->isSuperTypeOf($type)->yes()) {
             return [];
+        }
+
+        if ((new ObjectType(None::class))->isSuperTypeOf($type)->yes()) {
+            return [
+                RuleErrorBuilder::message('Calling '.$node->name->name.'() on None. None has no value.')
+                    ->identifier('option.unsafeMethod')
+                    ->build(),
+            ];
         }
 
         return [

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Brimmar\PHPStan\Rules;
 
+use Brimmar\PhpOption\None;
+use Brimmar\PhpOption\Some;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
@@ -12,17 +14,18 @@ use PhpParser\Node\Expr\AssignRef;
 use PhpParser\Node\Expr\Cast\Void_;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
 use PHPStan\Analyser\Scope;
-use Brimmar\PhpOption\None;
-use Brimmar\PhpOption\Some;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
@@ -32,6 +35,9 @@ use PHPStan\Type\VerbosityLevel;
  */
 class OptionUnusedRule implements Rule
 {
+    /**
+     * @param class-string $optionInterface
+     */
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option',
@@ -45,7 +51,7 @@ class OptionUnusedRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         $expr = $node->expr;
-        if ($expr instanceof Assign || $expr instanceof AssignRef || $expr instanceof AssignOp || $expr instanceof Void_) {
+        if ($expr instanceof Assign || $expr instanceof AssignRef || $expr instanceof AssignOp || $expr instanceof Void_ || $expr instanceof Variable || $expr instanceof PropertyFetch) {
             return [];
         }
 
@@ -54,7 +60,7 @@ class OptionUnusedRule implements Rule
         }
 
         $type = $scope->getType($expr);
-        if ((new \PHPStan\Type\NeverType())->isSuperTypeOf($type)->yes()) {
+        if ((new NeverType())->isSuperTypeOf($type)->yes()) {
             return [];
         }
 

@@ -21,6 +21,7 @@ services:
         class: Brimmar\PHPStan\Rules\OptionShapeRule
         arguments:
             optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+            resultInterface: 'Brimmar\PhpResult\Interfaces\Result'
         tags:
             - phpstan.rules.rule
     -

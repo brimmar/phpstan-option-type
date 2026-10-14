@@ -10,9 +10,8 @@ use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
 /**
@@ -20,7 +19,14 @@ use PHPStan\Type\VerbosityLevel;
  */
 class OptionShapeRule implements Rule
 {
-    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
+    /**
+     * @param class-string $optionInterface
+     * @param class-string $resultInterface
+     */
+    public function __construct(
+        private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option',
+        private string $resultInterface = 'Brimmar\PhpResult\Interfaces\Result',
+    ) {}
 
     public function getNodeType(): string
     {
@@ -39,16 +45,12 @@ class OptionShapeRule implements Rule
         }
 
         $type = $scope->getType($node->var);
-        if (! $type instanceof GenericObjectType) {
-            return [];
-        }
-
         if (! (new ObjectType($this->optionInterface))->isSuperTypeOf($type)->yes()) {
             return [];
         }
 
-        $inner = $type->getTypes()[0] ?? null;
-        if (! $inner instanceof Type) {
+        $inner = $type->getTemplateType($this->optionInterface, 'T');
+        if ($inner instanceof ErrorType) {
             return [];
         }
 
@@ -64,7 +66,7 @@ class OptionShapeRule implements Rule
             ];
         }
 
-        $expected = $method === 'flatten' ? $this->optionInterface : 'Brimmar\PhpResult\Interfaces\Result';
+        $expected = $method === 'flatten' ? $this->optionInterface : $this->resultInterface;
         if (! (new ObjectType($expected))->isSuperTypeOf($inner)->no()) {
             return [];
         }

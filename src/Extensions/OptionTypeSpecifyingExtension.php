@@ -13,6 +13,7 @@ use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\Analyser\TypeSpecifierAwareExtension;
 use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
 use PHPStan\Type\MixedType;
@@ -22,6 +23,9 @@ class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, Ty
 {
     private TypeSpecifier $typeSpecifier;
 
+    /**
+     * @param class-string $optionInterface
+     */
     public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
 
     public function setTypeSpecifier(TypeSpecifier $typeSpecifier): void
@@ -63,10 +67,11 @@ class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, Ty
 
     private function typeParameter(Type $type): Type
     {
-        if ($type instanceof GenericObjectType && $type->getTypes() !== []) {
-            return $type->getTypes()[0];
+        $inner = $type->getTemplateType($this->optionInterface, 'T');
+        if ($inner instanceof ErrorType) {
+            return new MixedType();
         }
 
-        return new MixedType();
+        return $inner;
     }
 }
