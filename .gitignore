@@ -1,4 +1,5 @@
 vendor
+.phpunit.result.cache
 
 # beads (bd) - Git-synced issue tracker
 .beads/beads.db

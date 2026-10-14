@@ -9,6 +9,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dependency-version: [prefer-lowest, prefer-stable]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -20,4 +24,10 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests
+        run: vendor/bin/phpunit
+
+      - name: Analyse src
+        run: vendor/bin/phpstan analyse --no-progress
