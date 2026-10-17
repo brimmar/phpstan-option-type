@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brimmar\PHPStan\Tests\Rules;
 
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OptionTypeSpecifyingExtensionTest extends TypeInferenceTestCase
 {
@@ -13,9 +14,7 @@ class OptionTypeSpecifyingExtensionTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/Data/option-narrowing.php');
     }
 
-    /**
-     * @dataProvider dataFileAsserts
-     */
+    #[DataProvider('dataFileAsserts')]
     public function testFileAsserts(string $assertType, string $file, mixed ...$args): void
     {
         $this->assertFileAsserts($assertType, $file, ...$args);
