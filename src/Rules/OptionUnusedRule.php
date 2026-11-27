@@ -40,14 +40,16 @@ class OptionUnusedRule implements Rule
      */
     public function __construct(
         private ReflectionProvider $reflectionProvider,
-        private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option',
+        private string $optionInterface = 'Brimmar\PhpOption\Option',
     ) {}
 
+    #[\Override]
     public function getNodeType(): string
     {
         return Expression::class;
     }
 
+    #[\Override]
     public function processNode(Node $node, Scope $scope): array
     {
         $expr = $node->expr;

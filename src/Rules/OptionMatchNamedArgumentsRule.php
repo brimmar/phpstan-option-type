@@ -19,13 +19,15 @@ class OptionMatchNamedArgumentsRule implements Rule
     /**
      * @param class-string $optionInterface
      */
-    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
+    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Option') {}
 
+    #[\Override]
     public function getNodeType(): string
     {
         return MethodCall::class;
     }
 
+    #[\Override]
     public function processNode(Node $node, Scope $scope): array
     {
         if (! $node->name instanceof Node\Identifier) {

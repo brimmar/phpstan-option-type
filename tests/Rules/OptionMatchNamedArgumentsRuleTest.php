@@ -13,9 +13,10 @@ use PHPStan\Testing\RuleTestCase;
  */
 class OptionMatchNamedArgumentsRuleTest extends RuleTestCase
 {
+    #[\Override]
     protected function getRule(): Rule
     {
-        return new OptionMatchNamedArgumentsRule('Brimmar\PhpOption\Interfaces\Option');
+        return new OptionMatchNamedArgumentsRule('Brimmar\PhpOption\Option');
     }
 
     public function testRule(): void

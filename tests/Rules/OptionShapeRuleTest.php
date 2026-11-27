@@ -13,11 +13,12 @@ use PHPStan\Testing\RuleTestCase;
  */
 class OptionShapeRuleTest extends RuleTestCase
 {
+    #[\Override]
     protected function getRule(): Rule
     {
         return new OptionShapeRule(
-            'Brimmar\PhpOption\Interfaces\Option',
-            'Brimmar\PhpResult\Interfaces\Result',
+            'Brimmar\PhpOption\Option',
+            'Brimmar\PhpResult\Result',
         );
     }
 

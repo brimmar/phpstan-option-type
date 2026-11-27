@@ -2,31 +2,31 @@ services:
     -
         class: Brimmar\PHPStan\Rules\OptionUnsafeMethodCallRule
         arguments:
-            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+            optionInterface: 'Brimmar\PhpOption\Option'
         tags:
             - phpstan.rules.rule
     -
         class: Brimmar\PHPStan\Rules\OptionMatchNamedArgumentsRule
         arguments:
-            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+            optionInterface: 'Brimmar\PhpOption\Option'
         tags:
             - phpstan.rules.rule
     -
         class: Brimmar\PHPStan\Rules\OptionUnusedRule
         arguments:
-            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+            optionInterface: 'Brimmar\PhpOption\Option'
         tags:
             - phpstan.rules.rule
     -
         class: Brimmar\PHPStan\Rules\OptionShapeRule
         arguments:
-            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
-            resultInterface: 'Brimmar\PhpResult\Interfaces\Result'
+            optionInterface: 'Brimmar\PhpOption\Option'
+            resultInterface: 'Brimmar\PhpResult\Result'
         tags:
             - phpstan.rules.rule
     -
         class: Brimmar\PHPStan\Extensions\OptionTypeSpecifyingExtension
         arguments:
-            optionInterface: 'Brimmar\PhpOption\Interfaces\Option'
+            optionInterface: 'Brimmar\PhpOption\Option'
         tags:
             - phpstan.typeSpecifier.methodTypeSpecifyingExtension

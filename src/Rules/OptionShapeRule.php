@@ -24,15 +24,17 @@ class OptionShapeRule implements Rule
      * @param class-string $resultInterface
      */
     public function __construct(
-        private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option',
-        private string $resultInterface = 'Brimmar\PhpResult\Interfaces\Result',
+        private string $optionInterface = 'Brimmar\PhpOption\Option',
+        private string $resultInterface = 'Brimmar\PhpResult\Result',
     ) {}
 
+    #[\Override]
     public function getNodeType(): string
     {
         return MethodCall::class;
     }
 
+    #[\Override]
     public function processNode(Node $node, Scope $scope): array
     {
         if (! $node->name instanceof Identifier) {
@@ -60,7 +62,7 @@ class OptionShapeRule implements Rule
             }
 
             return [
-                RuleErrorBuilder::message('Option::unzip() is for an array. The contained type is '.$inner->describe(VerbosityLevel::typeOnly()).'.')
+                RuleErrorBuilder::message('Option::unzip() is for an array. The contained type is ' . $inner->describe(VerbosityLevel::typeOnly()) . '.')
                     ->identifier('option.unzip')
                     ->build(),
             ];
@@ -74,8 +76,8 @@ class OptionShapeRule implements Rule
         $needed = $method === 'flatten' ? 'Option<Option<T>>' : 'Option<Result<T, E>>';
 
         return [
-            RuleErrorBuilder::message("Option::{$method}() is for {$needed}. The contained type is ".$inner->describe(VerbosityLevel::typeOnly()).'.')
-                ->identifier('option.'.$method)
+            RuleErrorBuilder::message("Option::{$method}() is for {$needed}. The contained type is " . $inner->describe(VerbosityLevel::typeOnly()) . '.')
+                ->identifier('option.' . $method)
                 ->build(),
         ];
     }

@@ -2,10 +2,10 @@
 
 namespace Brimmar\PHPStan\Tests\Rules\Data;
 
-use Brimmar\PhpOption\Interfaces\Option;
+use Brimmar\PhpOption\Option;
 use Brimmar\PhpOption\None;
 use Brimmar\PhpOption\Some;
-use Brimmar\PhpResult\Interfaces\Result;
+use Brimmar\PhpResult\Result;
 
 class ShapeFixtures
 {

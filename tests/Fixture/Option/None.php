@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Brimmar\PhpOption;
 
-use Brimmar\PhpOption\Interfaces\Option;
-
 /**
- * @template T
+ * @template-covariant T = never
  *
- * @implements Option<T>
+ * @extends Option<T>
  */
-final class None implements Option
+final class None extends Option
 {
     use OptionMethods;
 }

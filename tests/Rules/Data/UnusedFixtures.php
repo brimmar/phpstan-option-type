@@ -2,7 +2,7 @@
 
 namespace Brimmar\PHPStan\Tests\Rules\Data;
 
-use Brimmar\PhpOption\Interfaces\Option;
+use Brimmar\PhpOption\Option;
 use Brimmar\PhpOption\Some;
 
 function findOption(): Option

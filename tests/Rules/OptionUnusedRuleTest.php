@@ -13,6 +13,7 @@ use PHPStan\Testing\RuleTestCase;
  */
 class OptionUnusedRuleTest extends RuleTestCase
 {
+    #[\Override]
     protected function getRule(): Rule
     {
         return new OptionUnusedRule(self::createReflectionProvider());
@@ -24,7 +25,7 @@ class OptionUnusedRuleTest extends RuleTestCase
         // with NoDiscard must stay quiet. self::make() without it must not.
         $this->analyse([__DIR__ . '/Data/UnusedFixtures.php'], [
             [
-                'Unused Brimmar\PhpOption\Interfaces\Option. This value may be None, which should be handled.',
+                'Unused Brimmar\PhpOption\Option. This value may be None, which should be handled.',
                 19,
             ],
             [
@@ -32,7 +33,7 @@ class OptionUnusedRuleTest extends RuleTestCase
                 34,
             ],
             [
-                'Unused Brimmar\PhpOption\Interfaces\Option. This value may be None, which should be handled.',
+                'Unused Brimmar\PhpOption\Option. This value may be None, which should be handled.',
                 63,
             ],
         ]);

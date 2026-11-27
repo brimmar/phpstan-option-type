@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Brimmar\PhpResult\Interfaces;
+namespace Brimmar\PhpResult;
 
 /**
- * @template T
- * @template E
+ * @template-covariant T
+ * @template-covariant E
  */
-interface Result {}
+abstract class Result {}

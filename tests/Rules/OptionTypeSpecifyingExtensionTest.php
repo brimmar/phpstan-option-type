@@ -20,6 +20,7 @@ class OptionTypeSpecifyingExtensionTest extends TypeInferenceTestCase
         $this->assertFileAsserts($assertType, $file, ...$args);
     }
 
+    #[\Override]
     public static function getAdditionalConfigFiles(): array
     {
         return [__DIR__ . '/../../extension.neon'];

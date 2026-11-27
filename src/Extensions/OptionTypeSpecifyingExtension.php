@@ -17,6 +17,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 
 class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
@@ -26,18 +27,21 @@ class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, Ty
     /**
      * @param class-string $optionInterface
      */
-    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
+    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Option') {}
 
+    #[\Override]
     public function setTypeSpecifier(TypeSpecifier $typeSpecifier): void
     {
         $this->typeSpecifier = $typeSpecifier;
     }
 
+    #[\Override]
     public function getClass(): string
     {
         return $this->optionInterface;
     }
 
+    #[\Override]
     public function isMethodSupported(
         MethodReflection $methodReflection,
         MethodCall $node,
@@ -47,6 +51,7 @@ class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, Ty
             && ($context->true() || $context->false());
     }
 
+    #[\Override]
     public function specifyTypes(
         MethodReflection $methodReflection,
         MethodCall $node,
@@ -55,11 +60,14 @@ class OptionTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, Ty
     ): SpecifiedTypes {
         $isSome = $methodReflection->getName() === 'isSome';
         $wantsSome = $context->true() ? $isSome : ! $isSome;
-        $class = $wantsSome ? Some::class : None::class;
+        // None holds nothing, so its type is None<never>. It then passes as the Option of any other type.
+        $narrowed = $wantsSome
+            ? new GenericObjectType(Some::class, [$this->typeParameter($scope->getType($node->var))])
+            : new GenericObjectType(None::class, [new NeverType(true)]);
 
         return $this->typeSpecifier->create(
             $node->var,
-            new GenericObjectType($class, [$this->typeParameter($scope->getType($node->var))]),
+            $narrowed,
             TypeSpecifierContext::createTrue(),
             $scope,
         );

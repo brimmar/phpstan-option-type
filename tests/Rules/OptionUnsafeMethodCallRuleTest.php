@@ -13,11 +13,13 @@ use PHPStan\Testing\RuleTestCase;
  */
 class OptionUnsafeMethodCallRuleTest extends RuleTestCase
 {
+    #[\Override]
     protected function getRule(): Rule
     {
-        return new OptionUnsafeMethodCallRule('Brimmar\PhpOption\Interfaces\Option');
+        return new OptionUnsafeMethodCallRule('Brimmar\PhpOption\Option');
     }
 
+    #[\Override]
     public static function getAdditionalConfigFiles(): array
     {
         return [__DIR__ . '/../../extension.neon'];

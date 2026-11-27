@@ -22,13 +22,15 @@ class OptionUnsafeMethodCallRule implements Rule
     /**
      * @param class-string $optionInterface
      */
-    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Interfaces\Option') {}
+    public function __construct(private string $optionInterface = 'Brimmar\PhpOption\Option') {}
 
+    #[\Override]
     public function getNodeType(): string
     {
         return MethodCall::class;
     }
 
+    #[\Override]
     public function processNode(Node $node, Scope $scope): array
     {
         if (! $node->name instanceof Identifier) {
@@ -51,7 +53,7 @@ class OptionUnsafeMethodCallRule implements Rule
 
         if ((new ObjectType(None::class))->isSuperTypeOf($type)->yes()) {
             return [
-                RuleErrorBuilder::message('Calling '.$node->name->name.'() on None. None has no value.')
+                RuleErrorBuilder::message('Calling ' . $node->name->name . '() on None. None has no value.')
                     ->identifier('option.unsafeMethod')
                     ->build(),
             ];

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Brimmar\PhpOption;
 
-use Brimmar\PhpOption\Interfaces\Option;
-
 trait OptionMethods
 {
     public function isSome(): bool
